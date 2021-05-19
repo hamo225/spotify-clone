@@ -1,23 +1,62 @@
-import logo from './logo.svg';
-import './App.css';
+import React, { useEffect, useState } from "react";
+import "./App.css";
+import Login from "./Components/Login";
+import { getTokenFromUrl } from "./spotify";
+import Player from "./Components/Player.js";
+import SpotifyWebApi from "spotify-web-api-js";
+import { useDataLayerValue } from "./DataLayer";
+
+const spotify = new SpotifyWebApi(); //creating an instance inside the app which allows us to communicate with spotfy
 
 function App() {
+  const [{ user, token }, dispatch] = useDataLayerValue();
+  // runs function code based on condition - leave dependecy blank if running once.
+  useEffect(() => {
+    //keep an eye on the url to see if anthing changes and if it does then we fire off some code
+    const hash = getTokenFromUrl();
+    window.location.hash = "";
+    console.log("your full hash token is:", hash);
+
+    const _token = hash.access_token;
+    console.log("your hash token is:", _token);
+
+    if (_token) {
+      dispatch({
+        //send token to the data layer
+        type: "SET_TOKEN",
+        token: _token,
+      });
+
+      spotify.setAccessToken(_token); //giving the token to the spot api
+      // test the api connection. use getme() to get the suer data
+      spotify.getMe().then((user) => {
+        // console.log(user);
+        dispatch({
+          type: "SET_USER",
+          user: user,
+        });
+      });
+    }
+
+    console.log("your state token is:", token);
+  }, [token, dispatch]);
+
+  console.log("🙂", user);
+  console.log("👻", token);
+
   return (
     <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+      {token ? <Player spotify={spotify}></Player> : <Login></Login>}
+
+      {/* React context pi - state providers, reducers, , spotify api, material UI, user authentication */}
+      {/* spotify logo https://upload.wikimedia.org/wikipedia/commons/5/56/Spotify_logo_horizontal_black.jpg */}
+      {/* LOGIN PAGE - USER LOG IN USING SPOTIFY DETAILS INTEGRATION WITH USER AUTHENTICATION */}
+      {/* PAGE TOP */}
+      {/* SIDEBAR - ICONS, PLAYLISTS */}
+      {/* MAIN */}
+      {/* HEADER - SEARCH INPUT , AVATAR AND NAME */}
+      {/* HOME - DISCOVERWEEKLY, PLAY PANEL, LIST OF TRACKS*/}
+      {/* PAGE BOTTOM - PLAYER, volume control, skip tracks */}
     </div>
   );
 }
