@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect } from "react";
 import "./App.css";
 import Login from "./Components/Login";
 import { getTokenFromUrl } from "./spotify";
@@ -34,6 +34,21 @@ function App() {
         dispatch({
           type: "SET_USER",
           user: user,
+        });
+      });
+
+      spotify.getUserPlaylists().then((playlists) => {
+        dispatch({
+          type: "SET_PLAYLISTS",
+          playlists: playlists,
+        });
+      });
+
+      // make the call. capture the response.Putting it into the data later as discover weekly
+      spotify.getPlaylist("37i9dQZEVXcLHTctBeNji1").then((response) => {
+        dispatch({
+          type: "SET_DISCOVER_WEEKLY",
+          discover_weekly: response,
         });
       });
     }

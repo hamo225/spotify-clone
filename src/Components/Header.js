@@ -20,7 +20,7 @@ function Header() {
       </div>
       <div className="header__right">
         {/* input the user image and display name if they exist */}
-        <Avatar src={user?.images[0]?.url} alt={user.display_name}></Avatar>
+        <Avatar src={user?.images[0]?.url} alt={user?.display_name}></Avatar>
         <h4>{user?.display_name}</h4>
       </div>
     </div>
